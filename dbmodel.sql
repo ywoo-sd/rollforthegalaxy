@@ -42,19 +42,19 @@ ALTER TABLE  `player` ADD  `player_dictate` TINYINT NOT NULL DEFAULT  '0';
 
 CREATE TABLE IF NOT EXISTS `tile` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `card_type` varchar(16) NOT NULL,
-  `card_type_arg` int(11) NOT NULL,
-  `card_location` varchar(16) NOT NULL,
-  `card_location_arg` int(11) NOT NULL,
+  `card_type` varchar(16) NOT NULL COMMENT 'see materials.inc.php',
+  `card_type_arg` int(11) NOT NULL COMMENT 'unused',
+  `card_location` varchar(16) NOT NULL COMMENT 'one of {deck, tableau, bd<N>, bw<N>, homeworlds, factiontiles, scout}',
+  `card_location_arg` int(11) NOT NULL COMMENT 'player id or position in deck/stack',
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `dice` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `card_type` varchar(16) NOT NULL,
-  `card_type_arg` int(11) NOT NULL,
-  `card_location` varchar(16) NOT NULL,
-  `card_location_arg` int(11) NOT NULL,
+  `card_type` varchar(16) NOT NULL COMMENT 'color of die',
+  `card_type_arg` int(11) NOT NULL COMMENT 'result of roll',
+  `card_location` varchar(16) NOT NULL COMMENT 'one of {deck<N>, cup, citizenry, phase<N>, worldconstruct, devconstruct, resource}',
+  `card_location_arg` int(11) NOT NULL COMMENT 'player id or position in deck or tile id',
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
