@@ -2357,6 +2357,8 @@ class RollForTheGalaxy extends Table
         }
 
         $cost = max( $minimum_after_discount, $this->tiles_types[ $card_to_build_type_id ]['cost'] - $discount_total );
+        // Free Trade Zone does not increase cost from 1 to 2 (fix bug #8774)
+        $cost = min( $cost, $this->tiles_types[ $card_to_build_type_id ]['cost'] );
 
         return $cost;
     }
