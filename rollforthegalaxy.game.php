@@ -503,17 +503,6 @@ class RollForTheGalaxy extends Table
             }
         }
 
-        // TODO: why is this here?
-        if( $die_to_use === null && $phase_id == 1 )
-        {
-            // Consume in priority Alien die
-            foreach( $dice as $die )
-            {
-                if( $die['type'] == 7 )
-                    $die_to_use = $die;
-            }
-        }
-
         // Consume in priority 2 temporary dice (type_arg = 7)
         if( $die_to_use === null )
         {
