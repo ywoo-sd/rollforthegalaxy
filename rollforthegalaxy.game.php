@@ -1210,10 +1210,25 @@ class RollForTheGalaxy extends Table
             }
         }
 
-        self::notifyAllPlayers( 'simpleNote', clienttranslate('Scout: ${player_name} picks ${nbr} tiles.'), array('player_name'=> self::getCurrentPlayerName(), 'nbr' => count( $scouted ) ) );
-        self::notifyPlayer( $player_id, 'scouted', '', array(
-            'tiles' => self::toDoubleSidedTiles( $scouted )
-        ) );
+
+        if( count( $scouted ) == 0 )
+        {
+            self::notifyAllPlayers( 'simpleNote', 'WARNING: Converting ${player_name} scouting to stock because of missing tiles :(', array('player_name'=> self::getCurrentPlayerName()) );
+            self::DbQuery( "UPDATE player SET player_credit = LEAST( 10, player_credit+2 ) WHERE player_id='$player_id'" );
+            $new_credit = self::getUniqueValueFromDB( "SELECT player_credit FROM player WHERE player_id='$player_id'" );
+            self::notifyAllPlayers( "updateCredit", clienttranslate('Stock: ${player_name} gets +2$.'), array(
+                'player_id' => $player_id,
+                'player_name' => self::getCurrentPlayerName(),
+                'credit' => $new_credit
+            ) );
+            self::setGameStateValue( 'saved_dice_nbr', 0 );
+            self::inactivePlayerIfNoMoreDie( $player_id, 1 );
+        } else {
+            self::notifyAllPlayers( 'simpleNote', clienttranslate('Scout: ${player_name} picks ${nbr} tiles.'), array('player_name'=> self::getCurrentPlayerName(), 'nbr' => count( $scouted ) ) );
+            self::notifyPlayer( $player_id, 'scouted', '', array(
+                'tiles' => self::toDoubleSidedTiles( $scouted )
+            ) );
+        }
     }
 
     function pickScoutedTile( $tile_id, $side, $bOnTop )
