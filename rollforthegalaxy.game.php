@@ -131,7 +131,7 @@ class RollForTheGalaxy extends Table
 
         // Normal tiles
         $tiles = array();
-        for( $i=1; $i<=55; $i++ )
+        for( $i=1; $i<=56; $i++ )
         {
             if( $i != 54 ) // 54 does not exists ...
             {
