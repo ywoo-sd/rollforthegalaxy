@@ -2282,6 +2282,8 @@ class RollForTheGalaxy extends Table
         $this->returnUnusedDiceToCup( 1 );
         $this->tiles->moveAllCardsInLocation( 'usedexplore', 'deck' );
         $this->tiles->shuffle( 'deck' );
+
+        self::getCreditOnPhase( 1 );
         $this->gamestate->nextState('endPhase');
     }
 
