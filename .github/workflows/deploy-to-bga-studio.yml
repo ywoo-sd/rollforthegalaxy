@@ -1,0 +1,51 @@
+name: Deploy to BGA Studio
+
+on:
+  push:
+    branches:
+      - env/preview
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to BGA Studio
+        env:
+          BGA_USER: ${{ secrets.BGA_USER }}
+          BGA_PASS: ${{ secrets.BGA_PASS }}
+        run: |
+          echo "Deploying to BGA Studio..."
+          
+          # Create lftp script for SFTP deployment
+          lftp -c "
+            set sftp:auto-confirm yes
+            set net:timeout 30
+            set net:max-retries 3
+            open -u $BGA_USER,$BGA_PASS sftp://1.studio.boardgamearena.com:2022
+            
+            # Mirror the entire project to the preview folder
+            # --delete: remove files on server that don't exist locally
+            # --exclude: skip files that shouldn't be deployed
+            mirror --reverse --delete --verbose \
+              --exclude .git/ \
+              --exclude .github/ \
+              --exclude .gitignore \
+              --exclude _ide_helper.php \
+              --exclude bga-framework.d.ts \
+              --exclude README.md \
+              --exclude LICENCE_BGA \
+              . /rollforthegalaxypreview/
+            
+            bye
+          "
+          
+          echo "✅ Deployment complete!"
+
