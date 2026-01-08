@@ -1045,11 +1045,17 @@ class RollForTheGalaxy extends Table
 
         $tiles = $this->tiles->getCards( $cards );
 
+        $dev_cards = array();
+        $world_cards = array();
+
         foreach( $tiles as $tile )
         {
-            if( $tile['location'] != 'bd'.$player_id && $tile['location'] != 'bw'.$player_id )
+            if( $tile['location'] == 'bd'.$player_id )
+                $dev_cards[] = $tile['id'];
+            else if( $tile['location'] == 'bw'.$player_id )
+                $world_cards[] = $tile['id'];
+            else
                 throw new feException( "This tile is not in your construction zone" );
-
         }
 
         $this->tiles->moveCards( $cards, 'explorediscard', $player_id );
@@ -1058,6 +1064,8 @@ class RollForTheGalaxy extends Table
             'player_name' => self::getCurrentPlayerName(),
             'player_id' => $player_id,
             'cards' => $cards,
+            'dev_cards' => $dev_cards,
+            'world_cards' => $world_cards,
             'nbr' => count( $tiles )
         ) );
     }

@@ -2252,17 +2252,24 @@ function (dojo, declare) {
 
         notif_scoutdiscard: function( notif )
         {
-            for( var i in notif.args.cards )
+            // Remove development cards and update counter
+            for( var i in notif.args.dev_cards )
             {
-                if( this.playerDevInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.cards[i] ) )
-                {
-                    $('dev_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('dev_in_built_counter_'+notif.args.player_id).innerHTML ) -1;
-                }
-                else
-                {
-                    this.playerWorldInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.cards[i] );
-                    $('world_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('world_in_built_counter_'+notif.args.player_id).innerHTML ) -1;
-                }
+                this.playerDevInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.dev_cards[i] );
+            }
+            if( notif.args.dev_cards.length > 0 )
+            {
+                $('dev_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('dev_in_built_counter_'+notif.args.player_id).innerHTML ) - notif.args.dev_cards.length;
+            }
+
+            // Remove world cards and update counter
+            for( var i in notif.args.world_cards )
+            {
+                this.playerWorldInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.world_cards[i] );
+            }
+            if( notif.args.world_cards.length > 0 )
+            {
+                $('world_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('world_in_built_counter_'+notif.args.player_id).innerHTML ) - notif.args.world_cards.length;
             }
         },
 
