@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - env/preview
+      - env/studio
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  deploy:
+  deploy-preview:
+    if: github.ref == 'refs/heads/env/preview'
     runs-on: ubuntu-latest
     
     steps:
@@ -46,7 +48,6 @@ jobs:
           mv rollforthegalaxy_rollforthegalaxy.tpl rollforthegalaxypreview_rollforthegalaxypreview.tpl
           
           # Replace all internal references
-          # Using find + sed to handle all text files
           find . -type f \( -name "*.php" -o -name "*.js" -o -name "*.tpl" \) \
             -exec sed -i 's/rollforthegalaxy/rollforthegalaxypreview/g' {} +
           
@@ -58,26 +59,62 @@ jobs:
           
           echo "✅ File preparation complete!"
 
-      - name: Deploy to BGA Studio
+      - name: Deploy to rollforthegalaxypreview
         env:
           BGA_USER: ${{ secrets.BGA_USER }}
           BGA_PASS: ${{ secrets.BGA_PASS }}
         run: |
-          echo "Deploying to BGA Studio..."
+          echo "Deploying to rollforthegalaxypreview..."
           
-          # Deploy from staging directory
           lftp -c "
             set sftp:auto-confirm yes
             set net:timeout 30
             set net:max-retries 3
             open -u $BGA_USER,$BGA_PASS sftp://1.studio.boardgamearena.com:2022
             
-            # Mirror the staging folder to the preview project
-            # --delete: remove files on server that don't exist locally
             mirror --reverse --delete --verbose \
               staging/ /rollforthegalaxypreview/
             
             bye
           "
           
-          echo "✅ Deployment complete!"
+          echo "✅ Deployment to rollforthegalaxypreview complete!"
+
+  deploy-studio:
+    if: github.ref == 'refs/heads/env/studio'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to rollforthegalaxy
+        env:
+          BGA_USER: ${{ secrets.BGA_USER }}
+          BGA_PASS: ${{ secrets.BGA_PASS }}
+        run: |
+          echo "Deploying to rollforthegalaxy..."
+          
+          lftp -c "
+            set sftp:auto-confirm yes
+            set net:timeout 30
+            set net:max-retries 3
+            open -u $BGA_USER,$BGA_PASS sftp://1.studio.boardgamearena.com:2022
+            
+            mirror --reverse --delete --verbose \
+              --exclude .git/ \
+              --exclude .github/ \
+              --exclude .gitignore \
+              --exclude _ide_helper.php \
+              --exclude bga-framework.d.ts \
+              --exclude README.md \
+              --exclude LICENCE_BGA \
+              . /rollforthegalaxy/
+            
+            bye
+          "
+          
+          echo "✅ Deployment to rollforthegalaxy complete!"
