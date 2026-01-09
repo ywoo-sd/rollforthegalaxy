@@ -50,6 +50,9 @@ jobs:
           find . -type f \( -name "*.php" -o -name "*.js" -o -name "*.tpl" \) \
             -exec sed -i 's/rollforthegalaxy/rollforthegalaxypreview/g' {} +
           
+          # Replace the CamelCase class name in game.php
+          sed -i 's/class RollForTheGalaxy/class Rollforthegalaxypreview/g' rollforthegalaxypreview.game.php
+          
           echo "Files prepared:"
           ls -la
           
