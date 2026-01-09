@@ -2412,6 +2412,19 @@ function (dojo, declare) {
             {
                 this.dicePhases[ notif.args.player_id ][ origin_phase_id ].removeFromStockById( notif.args.die.id );
             }
+
+            // If this is the current player and we're in Explore phase (1), 
+            // hide Scout/Stock/Discard buttons when no dice left
+            if( notif.args.player_id == this.player_id && origin_phase_id == '1' )
+            {
+                if( this.dicePhases[this.player_id][1].count() == 0 )
+                {
+                    // No more dice - hide the explore action buttons
+                    if( $('scout') ) dojo.destroy('scout');
+                    if( $('scoutdiscard') ) dojo.destroy('scoutdiscard');
+                    if( $('stock') ) dojo.destroy('stock');
+                }
+            }
         },
 
         notif_produce: function( notif )
@@ -2522,6 +2535,20 @@ function (dojo, declare) {
         {
             // Die removed from the game
             this.removeDieFromAnywhere( notif.args.die );
+
+            // If this is the current player and die was from Explore phase (1), 
+            // hide Scout/Stock/Discard buttons when no dice left
+            if( notif.args.player_id == this.player_id && 
+                notif.args.location == 'phase' && notif.args.phase == 1 )
+            {
+                if( this.dicePhases[this.player_id][1].count() == 0 )
+                {
+                    // No more dice - hide the explore action buttons
+                    if( $('scout') ) dojo.destroy('scout');
+                    if( $('scoutdiscard') ) dojo.destroy('scoutdiscard');
+                    if( $('stock') ) dojo.destroy('stock');
+                }
+            }
         },
 
         getDieDivIdAnywhere: function( die, player_id )
