@@ -1055,6 +1055,11 @@ class RollForTheGalaxy extends Table
 
         $player_id = self::getCurrentPlayerId();
 
+        // Cannot discard tiles if you have no dice left to scout with
+        $dice = $this->dice->getCardsInLocation( 'phase1', $player_id );
+        if( count( $dice ) == 0 )
+            throw new feException( self::_("You cannot discard tiles because you have no dice left to scout with."), true );
+
         $tiles = $this->tiles->getCards( $cards );
 
         foreach( $tiles as $tile )
