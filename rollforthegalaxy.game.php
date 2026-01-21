@@ -17,6 +17,7 @@
   */
 
 use Bga\GameFramework\UserException;
+use Bga\GameFramework\SystemException;
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
@@ -199,7 +200,7 @@ class RollForTheGalaxy extends Table
 
             $sister_faction_tile = $this->tiles->getCardsOfTypeInLocation( $faction_tile_sister_type, null, 'factiontiles' );
             if( count( $sister_faction_tile ) != 1 )
-                throw new feException( "Cannot find faction tile of type ".$faction_tile_sister_type );
+                throw new SystemException( "Cannot find faction tile of type ".$faction_tile_sister_type );
 
             $sister_faction_tile = reset( $sister_faction_tile );
 
@@ -282,7 +283,7 @@ class RollForTheGalaxy extends Table
             return ( $type_id - 99 );
         }
         else
-            throw new feException( "Tried to flip tile $type_id which is NOT flipped" );
+            throw new SystemException( "Tried to flip tile $type_id which is NOT flipped" );
     }
 
     function initialScoreCompute()
@@ -489,7 +490,7 @@ class RollForTheGalaxy extends Table
         $dice = $this->dice->getCardsInLocation( 'phase'.$phase_id, $player_id );
 
         if( count( $dice ) == 0 )
-            throw new feException( "No more die for this phase" );
+            throw new SystemException( "No more die for this phase" );
 
         $die_to_use = null;
 
@@ -712,16 +713,16 @@ class RollForTheGalaxy extends Table
 
 
         if( self::getUniqueValueFromDB( "SELECT player_dictate FROM player WHERE player_id='$player_id'" ) != 0 )
-            throw new feException( "Dictate already used" );
+            throw new SystemException( "Dictate already used" );
 
         $die = $this->dice->getCard( $die_id );
 
         $bWasSelection = false;
 
         if( substr( $die['location'], 0, 5 ) != 'phase' )
-            throw new feException( "This die is not yours" );
+            throw new SystemException( "This die is not yours" );
         if( $die['location_arg'] != $player_id )
-            throw new feException( "This die is not yours" );
+            throw new SystemException( "This die is not yours" );
 
 
         if( $current_selection_die == $die_id )
@@ -757,9 +758,9 @@ class RollForTheGalaxy extends Table
         $bWasSelection = false;
 
         if( substr( $die['location'], 0, 5 ) != 'phase' )
-            throw new feException( "This die is not yours" );
+            throw new SystemException( "This die is not yours" );
         if( $die['location_arg'] != $player_id )
-            throw new feException( "This die is not yours" );
+            throw new SystemException( "This die is not yours" );
 
         $power_used = null;
         $power_tile = null;
@@ -798,7 +799,7 @@ class RollForTheGalaxy extends Table
             // Check if the die can be reassign
 
             if( $die['location'] == 'phase'.$phase_id && ( $die_id != $current_selection_die ))
-                throw new feException('You try to move a die to the phase it is alreay assigned' );
+                throw new SystemException('You try to move a die to the phase it is alreay assigned' );
 
 
             if( $die_id == $current_selection_die )
@@ -1055,7 +1056,7 @@ class RollForTheGalaxy extends Table
             else if( $tile['location'] == 'bw'.$player_id )
                 $world_cards[] = $tile['id'];
             else
-                throw new feException( "This tile is not in your construction zone" );
+                throw new SystemException( "This tile is not in your construction zone" );
         }
 
         $this->tiles->moveCards( $cards, 'explorediscard', $player_id );
@@ -1079,12 +1080,12 @@ class RollForTheGalaxy extends Table
 
         $tiles = self::getTilesWithEffects( 'explore_reassign', $player_id );
         if( count( $tiles ) == 0)
-            throw new feException( "Cannot find Advanced Logistics" );
+            throw new SystemException( "Cannot find Advanced Logistics" );
 
         $tile = $this->tiles->getCard( $tile_id );
 
         if( $tile['location'] != 'bd'.$player_id && $tile['location'] != 'bw'.$player_id )
-            throw new feException( "This tile is not in your construction zone" );
+            throw new SystemException( "This tile is not in your construction zone" );
 
         if( $tile['location'] == 'bd'.$player_id )
             $zone = 'dev';
@@ -1248,14 +1249,14 @@ class RollForTheGalaxy extends Table
         $player_id = self::getCurrentPlayerId();
 
         if( $tile['location'] != 'scout' || $tile['location_arg'] != $player_id )
-            throw new feException("This tile is not in your scouted area");
+            throw new SystemException("This tile is not in your scouted area");
 
         if( $bOnTop )
         {
             // Check there is improved reconnaissace
             $tiles = self::getTilesWithEffects( 'explore_may_place_on_top', $player_id );
             if( count( $tiles ) == 0 )
-                throw new feException( "Could not find improved reconnaissance" );
+                throw new SystemException( "Could not find improved reconnaissance" );
 
         }
 
@@ -1321,12 +1322,12 @@ class RollForTheGalaxy extends Table
         if( $zone == 'dev' )
         {
             if( $die['location'] != 'devconstruct' || $die['location_arg'] != $player_id )
-                throw new feException( "This die is not in your construction zone" );
+                throw new SystemException( "This die is not in your construction zone" );
         }
         else
         {
             if( $die['location'] != 'worldconstruct' || $die['location_arg'] != $player_id )
-                throw new feException( "This die is not in your construction zone" );
+                throw new SystemException( "This die is not in your construction zone" );
         }
 
         // Place die on cup
@@ -1405,7 +1406,7 @@ class RollForTheGalaxy extends Table
         $die = $this->dice->getCard( $die_id );
 
         if( $die['location'] != 'citizenry' || $die['location_arg'] != $player_id )
-            throw new feException( "This die is not in your citizenry" );
+            throw new SystemException( "This die is not in your citizenry" );
 
         // Place die on cup
         $this->dice->moveCard( $die_id, 'cup', $player_id );
@@ -1484,7 +1485,7 @@ class RollForTheGalaxy extends Table
         $die = $this->dice->getCard( $die_id );
 
         if( $die['location'] != 'resource' )
-            throw new feException( "This die is not a resource" );
+            throw new SystemException( "This die is not a resource" );
 
         $world = $this->tiles->getCard( $die['location_arg'] );
         $world_type = $this->tiles_types[ $world['type'] ];
@@ -1598,7 +1599,7 @@ class RollForTheGalaxy extends Table
                 // Check there is galactic bankers
                 $tiles = self::getTilesWithEffects( 'trade_may_spend_for_vp', $player_id );
                 if( count( $tiles ) == 0 )
-                    throw new feException( "Could not find galactic bankers" );
+                    throw new SystemException( "Could not find galactic bankers" );
 
                 // Spend 1$
                 self::DbQuery( "UPDATE player SET player_credit = player_credit-1 WHERE player_id='$player_id'" );
@@ -1695,11 +1696,11 @@ class RollForTheGalaxy extends Table
 
         if( $die['location'] == 'citizenry' && $die['location_arg'] == $player_id )
         {
-            throw new feException( 'Cannot recall a die from citizenry' );
+            throw new SystemException( 'Cannot recall a die from citizenry' );
         }
         else if( $die['location'] == 'cup' && $die['location_arg'] == $player_id )
         {
-            throw new feException( 'Cannot recall a die from cup' );
+            throw new SystemException( 'Cannot recall a die from cup' );
         }
         else if( $die['location'] == 'worldconstruct' && $die['location_arg'] == $player_id )
         {   // OK
@@ -1715,7 +1716,7 @@ class RollForTheGalaxy extends Table
                 throw new UserException( self::_("You cannot remove this die") );
         }
         else
-            throw new feException( "You cannot recall this die" );
+            throw new SystemException( "You cannot recall this die" );
 
         // Ok, remove this die
         $this->dice->moveCard( $die_id, 'cup', $player_id );
@@ -2663,7 +2664,7 @@ class RollForTheGalaxy extends Table
                                     }
 
                                     if( $die === null )
-                                        throw new feException("Could not found die for construction!");
+                                        throw new SystemException("Could not found die for construction!");
                                 }
 
                                 // Place this die on construction zone
@@ -3183,7 +3184,7 @@ class RollForTheGalaxy extends Table
         $player_id = self::getCurrentPlayerId();
 
         if( $tile['location'] != 'tableau' ||$tile['location_arg']!= $player_id)
-            throw new feException( "This tile is not in your tableau" );
+            throw new SystemException( "This tile is not in your tableau" );
 
         $already_there = $this->dice->getCardsInLocation( 'resource', $tile_id );
 
@@ -4052,7 +4053,7 @@ class RollForTheGalaxy extends Table
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new SystemException( "Zombie mode not supported at this game state: ".$statename );
     }
 
 ///////////////////////////////////////////////////////////////////////////////////:
