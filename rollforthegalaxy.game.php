@@ -16,9 +16,9 @@
   *
   */
 
+use Bga\GameFramework\UserException;
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-
 
 class RollForTheGalaxy extends Table
 {
@@ -660,11 +660,11 @@ class RollForTheGalaxy extends Table
         $player_id = self::getCurrentPlayerId();
 
         if( self::getUniqueValueFromDB( "SELECT player_choosed_phase FROM player WHERE player_id='$player_id'" ) === null )
-            throw new feException( self::_("You must selects a phase by placing a worker (die) anywhere on your phase strip."), true );
+            throw new UserException( self::_("You must selects a phase by placing a worker (die) anywhere on your phase strip.") );
 
         // Check that we have no Executive power half used
         if( self::getUniqueValueFromDB( "SELECT COUNT( card_id ) FROM tile WHERE card_location='tableau' AND card_location_arg='$player_id' AND card_type='132' AND card_type_arg>0 AND card_type_arg<10" ) > 0 )
-            throw new feException( self::_("Executive Power: you have to reassign EXACTLY TWO dice. Please use Reset dice if you cannot."), true );
+            throw new UserException( self::_("Executive Power: you have to reassign EXACTLY TWO dice. Please use Reset dice if you cannot.") );
 
         $this->gamestate->setPlayerNonMultiactive( $player_id, "assign" );
     }
@@ -708,7 +708,7 @@ class RollForTheGalaxy extends Table
         $current_selection_die = self::getUniqueValueFromDB( "SELECT player_choosed_phase FROM player WHERE player_id='$player_id'" );
 
         if( $current_selection_die === null )
-            throw new feException( self::_("You must start by selecting a phase to activate (by moving a dice to the black phase strip at the top)."), true );
+            throw new UserException( self::_("You must start by selecting a phase to activate (by moving a dice to the black phase strip at the top).") );
 
 
         if( self::getUniqueValueFromDB( "SELECT player_dictate FROM player WHERE player_id='$player_id'" ) != 0 )
@@ -767,7 +767,7 @@ class RollForTheGalaxy extends Table
         $current_selection_die = self::getUniqueValueFromDB( "SELECT player_choosed_phase FROM player WHERE player_id='$player_id'" );
 
         if( $current_selection_die === null && ! $bActivate )
-            throw new feException( self::_("You must start by selecting a phase to activate (by moving a dice to the black phase strip at the top)."), true );
+            throw new UserException( self::_("You must start by selecting a phase to activate (by moving a dice to the black phase strip at the top).") );
 
 
         if( $bActivate )
@@ -784,11 +784,11 @@ class RollForTheGalaxy extends Table
 
                 $reassigned_already_used = self::getUniqueValueFromDB( "SELECT card_type FROM tile WHERE card_type IN ('31','43','132') AND card_location='tableau' AND card_location_arg='$player_id' AND card_type_arg!='0' LIMIT 1" );
                 if( $reassigned_already_used !== null )
-                    throw new feException( sprintf( self::_('You cannot change selected phase after using %s. Please reset dice if you really want to do this.'), $this->tiles_types[ $reassigned_already_used ]['name'] ), true );
+                    throw new UserException( sprintf( self::_('You cannot change selected phase after using %s. Please reset dice if you really want to do this.'), $this->tiles_types[ $reassigned_already_used ]['name'] ) );
             }
             else
             {
-                throw new feException( self::_("You already choosed a phase to activate with a die."), true );
+                throw new UserException( self::_("You already choosed a phase to activate with a die.") );
             }
 
             $power_used = clienttranslate('phase selection');
@@ -804,7 +804,7 @@ class RollForTheGalaxy extends Table
             if( $die_id == $current_selection_die )
             {
                 // UPDATE: cannot do this
-                throw new feException( self::_('The only way to do this is to use Reset dice button.'), true );
+                throw new UserException( self::_('The only way to do this is to use Reset dice button.') );
             }
 
             if( $power_used === null )
@@ -904,7 +904,7 @@ class RollForTheGalaxy extends Table
                                 }
                                 else
                                 {
-                                    throw new feException( sprintf( _("Sorry, but the power of %s does not apply to this reassign."), _( $this->tiles_types[ $tile['type'] ]['name'] ) ), true );
+                                    throw new UserException( sprintf( _("Sorry, but the power of %s does not apply to this reassign."), _( $this->tiles_types[ $tile['type'] ]['name'] ) ) );
                                 }
                             }
                             else if( $power_tile_id !== null && $power_tile_id != $tile['id'] && $bCanBeUsed )
@@ -939,7 +939,7 @@ class RollForTheGalaxy extends Table
                                     {
                                         if( $die_is_from != $tile['type_arg'] )
                                         {
-                                            throw new feException( sprintf( self::_("Executive Power reassign power: the second die must come from the same phase (%s) than the first one."), $this->dice_faces[ $tile['type_arg'] ] ), true );
+                                            throw new UserException( sprintf( self::_("Executive Power reassign power: the second die must come from the same phase (%s) than the first one."), $this->dice_faces[ $tile['type_arg'] ] ) );
                                         }
 
                                         self::DbQuery( "UPDATE tile SET card_type_arg='10' WHERE card_id='".$tile['id']."'" ); // Cannot be used anymore
@@ -966,7 +966,7 @@ class RollForTheGalaxy extends Table
             }
 
             if( $power_used === null )
-                throw new feException( self::_("You have no dice re-assign power that can do this (or already used it)"), true );
+                throw new UserException( self::_("You have no dice re-assign power that can do this (or already used it)") );
 
             // OKAY, we can do this!
         }
@@ -996,10 +996,10 @@ class RollForTheGalaxy extends Table
         $player_id = self::getCurrentPlayerId();
 
         if( $this->tiles->countCardInLocation( 'explorediscard', $player_id ) > 0 )
-            throw new feException( self::_("You discarded some tiles before, so you have to do a Scout action now."), true );
+            throw new UserException( self::_("You discarded some tiles before, so you have to do a Scout action now.") );
 
         if( $this->tiles->countCardInLocation( 'scout', $player_id ) > 0 )
-            throw new feException( self::_("You must choose the side of already scouted tiles."), true );
+            throw new UserException( self::_("You must choose the side of already scouted tiles.") );
 
         $die = self::consumeDie( $player_id, 1, $prioritydie );
 
@@ -1156,7 +1156,7 @@ class RollForTheGalaxy extends Table
         $player_id = self::getCurrentPlayerId();
 
         if( $this->tiles->countCardInLocation( 'scout', $player_id ) > 0 )
-            throw new feException( self::_("You must choose the side of already scouted tiles."), true );
+            throw new UserException( self::_("You must choose the side of already scouted tiles.") );
 
 
 
@@ -1413,7 +1413,7 @@ class RollForTheGalaxy extends Table
         $current_credit = self::getUniqueValueFromDB( "SELECT player_credit FROM player WHERE player_id='$player_id'" );
 
         if( $current_credit == 0 )
-            throw new feException( self::_("You have no more credit to do this."), true );
+            throw new UserException( self::_("You have no more credit to do this.") );
 
         self::DbQuery( "UPDATE player SET player_credit = player_credit-1 WHERE player_id='$player_id'" );
         //self::DbQuery( "UPDATE dice SET card_type_arg='99' WHERE card_id='$die_id'" );  // To mark that it has been recruited this turn
@@ -1453,7 +1453,7 @@ class RollForTheGalaxy extends Table
         $current_credit = self::getUniqueValueFromDB( "SELECT player_credit FROM player WHERE player_id='$player_id'" );
 
         if( $current_credit > 0 && $this->dice->countCardInLocation( 'citizenry', $player_id ) > 0 )
-            throw new feException( self::_("You must recruit dice from your Citizenry until your credits run out or your Citizenry is empty."), true );
+            throw new UserException( self::_("You must recruit dice from your Citizenry until your credits run out or your Citizenry is empty.") );
 
         if( $current_credit == 0 )
         {
@@ -1468,7 +1468,7 @@ class RollForTheGalaxy extends Table
 
         // If no dice in cup, must recall at least 1 die
         if( $this->dice->countCardInLocation( 'cup', $player_id ) == 0 )
-            throw new feException( self::_("You must RECALL at least one dice from anywhere, otherwise your cup will be empty!"), true );
+            throw new UserException( self::_("You must RECALL at least one dice from anywhere, otherwise your cup will be empty!") );
 
         $this->gamestate->setPlayerNonMultiactive( $player_id, "no_more_actions" );
     }
@@ -1712,7 +1712,7 @@ class RollForTheGalaxy extends Table
             $world = $this->tiles->getCard( $die['location_arg'] );
 
             if( $world['location'] != 'tableau' || $world['location_arg'] != $player_id )
-                throw new feException( self::_("You cannot remove this die"), true );
+                throw new UserException( self::_("You cannot remove this die") );
         }
         else
             throw new feException( "You cannot recall this die" );
@@ -1757,14 +1757,14 @@ class RollForTheGalaxy extends Table
             $world = $this->tiles->getCard( $die['location_arg'] );
 
             if( $world['location'] != 'tableau' || $world['location_arg'] != $player_id )
-                throw new feException( self::_("You cannot remove this die"), true );
+                throw new UserException( self::_("You cannot remove this die") );
         }
         else if( substr( $die['location'], 0, 5 ) == 'phase' )
         {
             // Phase die => ok
         }
         else
-            throw new feException( self::_("You cannot remove this die"), true );
+            throw new UserException( self::_("You cannot remove this die") );
 
         // Ok, remove this die
         $this->dice->moveCard( $die_id, 'trash' );
@@ -2743,14 +2743,14 @@ class RollForTheGalaxy extends Table
         {
             if( $die['location'] != 'phase2' || $die['location_arg'] != $player_id )
             {
-                    throw new feException( self::_("You must choose a die from your Develop phase column."), true );
+                    throw new UserException( self::_("You must choose a die from your Develop phase column.") );
             }
         }
         else
         {
             if( $die['location'] != 'phase3' || $die['location_arg'] != $player_id )
             {
-                throw new feException( self::_("You must choose a die from your Settle phase column."), true );
+                throw new UserException( self::_("You must choose a die from your Settle phase column.") );
             }
         }
 
@@ -3196,14 +3196,14 @@ class RollForTheGalaxy extends Table
                 $limit = 2;
 
             if( count( $already_there ) >= $limit )
-                throw new feException( self::_("There is already a resource on this world"), true );
+                throw new UserException( self::_("There is already a resource on this world") );
         }
 
         if( $tile_type['category'] != 'world' )
-            throw new feException( self::_("You must choose a world."), true );
+            throw new UserException( self::_("You must choose a world.") );
 
         if( $tile_type['type'] == 0 )
-            throw new feException( self::_("This type of world (gray) cannot produce any resource."), true );
+            throw new UserException( self::_("This type of world (gray) cannot produce any resource.") );
 
         $dice = $this->dice->getCardsInLocation( 'phase4', $player_id );
 
