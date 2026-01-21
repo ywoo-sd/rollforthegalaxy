@@ -1065,6 +1065,8 @@ class RollForTheGalaxy extends Table
             'player_id' => $player_id,
             'dev_cards' => $dev_cards,
             'world_cards' => $world_cards,
+            'dev_top' => $this->tiles->getCardOnTop( 'bd'.$player_id ),
+            'world_top' => $this->tiles->getCardOnTop( 'bw'.$player_id ),
             'nbr' => count( $tiles )
         ) );
     }
@@ -1276,35 +1278,28 @@ class RollForTheGalaxy extends Table
             'top' => $bOnTop
         ) );
 
-
+        $msg_tile = $tile;
         if( $bOnTop || $this->tiles->countCardInLocation( $target_location ) == 1 )
         {
             // The tile has been placed at the top of the stack => visible
-
-            self::notifyAllPlayers( 'newConstruction', clienttranslate('${player_name} picks a ${type}.'), array(
-                'i18n' => array( 'type' ),
-                'player_name' => self::getCurrentPlayerName(),
-                'type' => $side == 'world' ? clienttranslate('world'): clienttranslate('development'),
-                'target' => $side,
-                'tile' => $tile,
-                'visible' => true,
-                'player_id' => $player_id
-            ) );
-
+            // do nothing
         }
         else
         {
             // The tile has been placed at the bottom of the stack => non visible.
-
-            self::notifyAllPlayers( 'newConstruction', clienttranslate('${player_name} picks a ${type}.'), array(
-                'i18n' => array( 'type' ),
-                'player_name' => self::getCurrentPlayerName(),
-                'player_id' => $player_id,
-                'visible' => false,
-                'target' => $side,
-                'type' => $side == 'world' ? clienttranslate('world'): clienttranslate('development')
-            ) );
+            // Use Secluded World as dummy
+            $msg_tile['type'] = 1;
         }
+
+        self::notifyAllPlayers( 'newConstruction', clienttranslate('${player_name} picks a ${type}.'), array(
+            'i18n' => array( 'type' ),
+            'player_name' => self::getCurrentPlayerName(),
+            'type' => $side == 'world' ? clienttranslate('world'): clienttranslate('development'),
+            'target' => $side,
+            'tile' => $msg_tile,
+            'player_id' => $player_id,
+            'top' => $bOnTop,
+        ) );
 
         if( $this->tiles->countCardInLocation( 'scout', $player_id ) > 0 )
         {

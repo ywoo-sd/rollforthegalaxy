@@ -2260,6 +2260,10 @@ function (dojo, declare) {
             if( notif.args.dev_cards.length > 0 )
             {
                 $('dev_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('dev_in_built_counter_'+notif.args.player_id).innerHTML ) - notif.args.dev_cards.length;
+                if (notif.args.dev_top != null) {
+                    this.playerDevInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.dev_top.id )
+                    this.playerDevInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.dev_top.type, notif.args.dev_top.id );
+                }
             }
 
             // Remove world cards and update counter
@@ -2270,6 +2274,10 @@ function (dojo, declare) {
             if( notif.args.world_cards.length > 0 )
             {
                 $('world_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('world_in_built_counter_'+notif.args.player_id).innerHTML ) - notif.args.world_cards.length;
+                if (notif.args.world_top != null) {
+                    this.playerWorldInBuilt[ notif.args.player_id ].removeFromStockById( notif.args.world_top.id );
+                    this.playerWorldInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.world_top.type, notif.args.world_top.id );
+                }
             }
         },
 
@@ -2812,20 +2820,18 @@ function (dojo, declare) {
                 return ;
             }
 
+            var pos = ':first';
+            if( notif.args.top )
+            {   pos = undefined; }
+
             if( notif.args.target == 'dev' )
             {
-                if( notif.args.visible )
-                {
-                    this.playerDevInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.tile.type, notif.args.tile.id );
-                }
+                this.playerDevInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.tile.type, notif.args.tile.id, undefined, pos);
                 $('dev_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('dev_in_built_counter_'+notif.args.player_id).innerHTML ) +1;
             }
             else if( notif.args.target == 'world' )
             {
-                if( notif.args.visible )
-                {
-                    this.playerWorldInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.tile.type, notif.args.tile.id );
-                }
+                this.playerWorldInBuilt[ notif.args.player_id ].addToStockWithId( notif.args.tile.type, notif.args.tile.id, undefined, pos);
                 $('world_in_built_counter_'+notif.args.player_id).innerHTML = toint( $('world_in_built_counter_'+notif.args.player_id).innerHTML ) +1;
             }
         },
