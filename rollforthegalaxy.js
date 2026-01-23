@@ -1562,51 +1562,46 @@ function (dojo, declare) {
 
         onPickScoutedTile: function( control_name, item_id )
         {
-            // Choose a tile that have been scouted
+            const side = (control_name=='scout_dev') ? 'dev' : 'world';
 
             if( typeof item_id != 'undefined' )
             {
                 // Is there Improved reconnaissace here?
                 if( dojo.query( '#tableau_'+this.player_id+' .card_content_1007' ).length > 0 )
                 {
-                    // Yes!
-                    // => additional choice
-
-                    this.multipleChoiceDialog( _('Improved reconnaissance: do you want to place it on top of the construction stack?'), {
-                        1: _('Yes, use Improved reconnaissance'),
-                        0: _('No, place it at the bottom')
-                    }, dojo.hitch( this, function( choice ) {
-
-
-                        this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/pickScoutedTile.html", {
-                                                                                lock: true,
-                                                                                tile: item_id,
-                                                                                side: ( (control_name=='scout_dev') ? 'dev' : 'world' ),
-                                                                                top: choice
-                                                                             },
-                                     this, function( result ) {}, function( is_error) {} );
-
-
-                        this.scoutedDev.unselectAll();
-                        this.scoutedWorld.unselectAll();
-
-                    } ) );
-
-                    return ;
+                    var stackSize = toint( $(side + '_in_built_counter_' + this.player_id).innerHTML );
+                    if (stackSize > 0)
+                    {
+                        this.multipleChoiceDialog( _('Improved reconnaissance: do you want to place it on top of the construction stack?'), {
+                            1: _('Yes, use Improved reconnaissance'),
+                            0: _('No, place it at the bottom')
+                        }, dojo.hitch( this, function( choice ) {
+                            this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/pickScoutedTile.html",
+                                           {
+                                               lock: true,
+                                               tile: item_id,
+                                               side: side,
+                                               top: choice
+                                           },
+                                           this, function( result ) {}, function( is_error) {} );
+                            this.scoutedDev.unselectAll();
+                            this.scoutedWorld.unselectAll();
+                        } ) );
+                        return ;
+                    }
                 }
-
 
                 this.scoutedDev.unselectAll();
                 this.scoutedWorld.unselectAll();
 
-                this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/pickScoutedTile.html", {
-                                                                        lock: true,
-                                                                        tile: item_id,
-                                                                        side: ( (control_name=='scout_dev') ? 'dev' : 'world' ),
-                                                                        top: 0
-                                                                     },
-                             this, function( result ) {}, function( is_error) {} );
-
+                this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/pickScoutedTile.html",
+                               {
+                                   lock: true,
+                                   tile: item_id,
+                                   side: side,
+                                   top: 0
+                               },
+                               this, function( result ) {}, function( is_error) {} );
             }
         },
 
