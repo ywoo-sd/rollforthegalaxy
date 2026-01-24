@@ -2227,34 +2227,28 @@ class RollForTheGalaxy extends Table
     {
         $player_to_dice_nbr = self::getDiceForPhase( 1 );
 
-        // Also activate players with Advanced Logistics (explore_reassign) even if they have no dice
-        $advanced_logistics_tiles = self::getTilesWithEffects( 'explore_reassign' );
-        $players_with_advanced_logistics = array();
-        foreach( $advanced_logistics_tiles as $tile )
+        if( $player_to_dice_nbr === null )
         {
-            $players_with_advanced_logistics[ $tile['location_arg'] ] = true;
-        }
-
-        if( $player_to_dice_nbr === null && count( $players_with_advanced_logistics ) == 0 )
-        {
+            // Nobody selected Explore - skip the phase entirely
+            // (Advanced Logistics can only be used DURING the Explore phase, not trigger it)
             $this->returnUnusedDiceToCup( 1 );
             $this->gamestate->nextState('skipPhase');
         }
         else
         {
-            // Active all players who have dice for this phase OR have Advanced Logistics
+            // Explore phase is happening - activate players with dice
 
             self::setGameStateValue( 'saved_dice_nbr', 0 ); // Used on this phase for Alien reseach team
 
-            if( $player_to_dice_nbr === null )
-                $player_to_dice_nbr = array();
-
             $player_to_dice_nbr = self::addTmpDiceForPhase( 1, $player_to_dice_nbr );
 
-            // Merge players with Advanced Logistics into the active players list
+            // Also activate players with Advanced Logistics (explore_reassign) even if they have no dice
+            // They can use Advanced Logistics during the Explore phase
+            $advanced_logistics_tiles = self::getTilesWithEffects( 'explore_reassign' );
             $active_players = array_keys( $player_to_dice_nbr );
-            foreach( $players_with_advanced_logistics as $player_id => $val )
+            foreach( $advanced_logistics_tiles as $tile )
             {
+                $player_id = $tile['location_arg'];
                 if( ! in_array( $player_id, $active_players ) )
                     $active_players[] = $player_id;
             }
