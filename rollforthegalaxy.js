@@ -2418,9 +2418,9 @@ function (dojo, declare) {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
                     // No more dice - hide the explore action buttons
-                    if( $('scout') ) dojo.destroy('scout');
-                    if( $('scoutdiscard') ) dojo.destroy('scoutdiscard');
-                    if( $('stock') ) dojo.destroy('stock');
+                    if( $('scout') ) dojo.style('scout', 'display', 'none');
+                    if( $('scoutdiscard') ) dojo.style('scoutdiscard', 'display', 'none');
+                    if( $('stock') ) dojo.style('stock', 'display', 'none');
                 }
             }
         },
@@ -2542,9 +2542,9 @@ function (dojo, declare) {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
                     // No more dice - hide the explore action buttons
-                    if( $('scout') ) dojo.destroy('scout');
-                    if( $('scoutdiscard') ) dojo.destroy('scoutdiscard');
-                    if( $('stock') ) dojo.destroy('stock');
+                    if( $('scout') ) dojo.style('scout', 'display', 'none');
+                    if( $('scoutdiscard') ) dojo.style('scoutdiscard', 'display', 'none');
+                    if( $('stock') ) dojo.style('stock', 'display', 'none');
                 }
             }
         },
