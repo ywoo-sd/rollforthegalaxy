@@ -625,24 +625,22 @@ function (dojo, declare) {
                         this.addActionButton( 'stock', _('Stock (+2$)'), 'onStock' );
                     }
                     
-                    // Hide Scout/Stock/Discard buttons if player has no dice
+                    // Player having no dice and explore phase not being done means you are just rearranging tiles.
                     if( this.dicePhases[this.player_id][1].count() == 0 )
                     {
                         dojo.style('scout', 'display', 'none');
                         dojo.style('scoutdiscard', 'display', 'none');
                         dojo.style('stock', 'display', 'none');
-                        // Update title for Advanced Logistics users
                         if( this.hasAdvancedLogistics(this.player_id) )
                         {
                             this.statusBar.setTitle(_("Explore: ${you} may rearrange your tile(s)"));
                         }
                     }
                     
-                    // Add Done button for players with Advanced Logistics
+                    // Players with AL will need a done button to confirm their tile rearrangement after using their last die.
                     if( this.hasAdvancedLogistics(this.player_id) )
                     {
                         this.addActionButton( 'exploreDone', _('Done'), 'onExploreDone' );
-                        // Initially hide - will be shown when no dice and no scouted tiles left
                         dojo.style('exploreDone', 'display', 'none');
                         this.updateExploreDoneButton();
                     }
@@ -713,7 +711,6 @@ function (dojo, declare) {
             return false;
         },
 
-        // Update the Explore Done button visibility - show only when no dice and no scouted tiles left
         updateExploreDoneButton: function()
         {
             if( ! $('exploreDone') ) return;
@@ -729,7 +726,6 @@ function (dojo, declare) {
             else
             {
                 dojo.style('exploreDone', 'display', 'inline-block');
-                // Update title to reflect Advanced Logistics action
                 this.statusBar.setTitle(_("Explore: ${you} may rearrange your tile(s)"));
             }
         },
@@ -2455,12 +2451,11 @@ function (dojo, declare) {
             {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
-                    // No more dice - hide the explore action buttons
+                    // No more dice so explore action buttons will just lead to server errors.
                     if( $('scout') ) dojo.style('scout', 'display', 'none');
                     if( $('scoutdiscard') ) dojo.style('scoutdiscard', 'display', 'none');
                     if( $('stock') ) dojo.style('stock', 'display', 'none');
                 }
-                // Update Done button state
                 this.updateExploreDoneButton();
             }
         },
@@ -2581,12 +2576,11 @@ function (dojo, declare) {
             {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
-                    // No more dice - hide the explore action buttons
+                    // No more dice so explore action buttons will just lead to server errors.
                     if( $('scout') ) dojo.style('scout', 'display', 'none');
                     if( $('scoutdiscard') ) dojo.style('scoutdiscard', 'display', 'none');
                     if( $('stock') ) dojo.style('stock', 'display', 'none');
                 }
-                // Update Done button state
                 this.updateExploreDoneButton();
             }
         },
@@ -2890,7 +2884,6 @@ function (dojo, declare) {
                 this.hideScoutPanel();
             }
 
-            // Update Done button state after placing scouted tile
             this.updateExploreDoneButton();
         },
 
