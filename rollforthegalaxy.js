@@ -631,6 +631,11 @@ function (dojo, declare) {
                         dojo.style('scout', 'display', 'none');
                         dojo.style('scoutdiscard', 'display', 'none');
                         dojo.style('stock', 'display', 'none');
+                        // Update title for Advanced Logistics users
+                        if( this.hasAdvancedLogistics(this.player_id) )
+                        {
+                            $('pagemaintitletext').innerHTML = _("Explore: You may rearrange your tiles");
+                        }
                     }
                     
                     // Add Done button for players with Advanced Logistics
@@ -724,6 +729,8 @@ function (dojo, declare) {
             else
             {
                 dojo.style('exploreDone', 'display', 'inline-block');
+                // Update title to reflect Advanced Logistics action
+                $('pagemaintitletext').innerHTML = _("Explore: You may rearrange your tiles");
             }
         },
 
