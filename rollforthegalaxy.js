@@ -2432,9 +2432,10 @@ function (dojo, declare) {
                 this.dicePhases[ notif.args.player_id ][ origin_phase_id ].removeFromStockById( notif.args.die.id );
             }
 
-            // If this is the current player and we're in Explore phase (1), 
-            // hide Scout/Stock/Discard buttons when no dice left
-            if( notif.args.player_id == this.player_id && origin_phase_id == '1' )
+            // If this is the current player, check if we should hide explore buttons
+            // We check by game state since die.location may already be updated to citizenry
+            if( notif.args.player_id == this.player_id && 
+                this.gamedatas.gamestate.name == 'explore' )
             {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
@@ -2557,10 +2558,10 @@ function (dojo, declare) {
             // Die removed from the game
             this.removeDieFromAnywhere( notif.args.die );
 
-            // If this is the current player and die was from Explore phase (1), 
+            // If this is the current player and we're in Explore phase, 
             // hide Scout/Stock/Discard buttons when no dice left
             if( notif.args.player_id == this.player_id && 
-                notif.args.location == 'phase' && notif.args.phase == 1 )
+                this.gamedatas.gamestate.name == 'explore' )
             {
                 if( this.dicePhases[this.player_id][1].count() == 0 )
                 {
