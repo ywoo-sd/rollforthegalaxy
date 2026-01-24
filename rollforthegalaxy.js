@@ -616,8 +616,7 @@ function (dojo, declare) {
                     break;
 
                  case 'explore':
-                    // Always add Scout/Stock/Discard buttons initially
-                    // They will be dynamically hidden when dice are consumed
+                    // Add Scout/Stock/Discard buttons
                     this.addActionButton( 'scout', _('Scout (new tiles)'), 'onScout' );
                     this.addActionButton( 'scoutdiscard', _('Discard selected tiles'), 'onScoutDiscard' );
                     if (this.hasAlienArchaeology(this.player_id)) {
@@ -625,6 +624,15 @@ function (dojo, declare) {
                     } else {
                         this.addActionButton( 'stock', _('Stock (+2$)'), 'onStock' );
                     }
+                    
+                    // Hide Scout/Stock/Discard buttons if player has no dice
+                    if( this.dicePhases[this.player_id][1].count() == 0 )
+                    {
+                        dojo.style('scout', 'display', 'none');
+                        dojo.style('scoutdiscard', 'display', 'none');
+                        dojo.style('stock', 'display', 'none');
+                    }
+                    
                     // Add Done button for players with Advanced Logistics
                     if( this.hasAdvancedLogistics(this.player_id) )
                     {
