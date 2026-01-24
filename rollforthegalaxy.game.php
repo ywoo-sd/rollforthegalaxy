@@ -2225,23 +2225,12 @@ class RollForTheGalaxy extends Table
 
     function stStartExplore()
     {
-        // First check if Explore phase was actually selected by anyone
-        $phases_to_active = self::number_to_phases_to_active( self::getGameStateValue( 'selectedphases' ) );
-        
-        if( ! isset( $phases_to_active[ 1 ] ) )
-        {
-            // Explore was NOT selected - skip the phase entirely
-            // (Advanced Logistics can only be used DURING the Explore phase, not trigger it)
-            $this->returnUnusedDiceToCup( 1 );
-            $this->gamestate->nextState('skipPhase');
-            return;
-        }
-
         $player_to_dice_nbr = self::getDiceForPhase( 1 );
 
         if( $player_to_dice_nbr === null )
         {
-            // Phase selected but no dice (shouldn't happen, but handle gracefully)
+            // Nobody selected Explore - skip the phase entirely
+            // (Advanced Logistics can only be used DURING the Explore phase, not trigger it)
             $this->returnUnusedDiceToCup( 1 );
             $this->gamestate->nextState('skipPhase');
         }
