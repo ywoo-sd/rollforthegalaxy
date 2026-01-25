@@ -1059,7 +1059,7 @@ class RollForTheGalaxy extends Table
         // Cannot discard tiles if you have no dice left to scout with
         $dice = $this->dice->getCardsInLocation( 'phase1', $player_id );
         if( count( $dice ) == 0 )
-            throw new feException( self::_("You cannot discard tiles because you have no dice left to scout with."), true );
+            throw new UserException( self::_("You cannot discard tiles because you have no dice left to scout with."), true );
 
         $tiles = $this->tiles->getCards( $cards );
 
@@ -1500,11 +1500,11 @@ class RollForTheGalaxy extends Table
         // Check if player still has dice to use
         $dice = $this->dice->getCardsInLocation( 'phase1', $player_id );
         if( count( $dice ) > 0 )
-            throw new feException( self::_("You still have dice to use during this phase."), true );
+            throw new UserException( self::_("You still have dice to use during this phase."), true );
 
         // Check if player still has scouted tiles to place
         if( $this->tiles->countCardInLocation( 'scout', $player_id ) > 0 )
-            throw new feException( self::_("You must place your scouted tiles first."), true );
+            throw new UserException( self::_("You must place your scouted tiles first."), true );
 
         $this->gamestate->setPlayerNonMultiactive( $player_id, "no_more_actions" );
     }
