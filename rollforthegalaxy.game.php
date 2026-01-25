@@ -580,7 +580,8 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         {
             // During Explore phase (phase 1), keep players with Advanced Logistics active
             // so they can still rearrange tiles after using their last die
-            if( $phase_id == 1 )
+            // However during handling of Alien Research Ship we mustn't end up in a loop.
+            if( $phase_id == 1 && !self::checkAction( 'alien_research', false ) )
             {
                 $advanced_logistics_tiles = self::getTilesWithEffects( 'explore_reassign', $player_id );
                 if( count( $advanced_logistics_tiles ) > 0 )
