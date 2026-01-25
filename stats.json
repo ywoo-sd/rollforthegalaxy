@@ -1,0 +1,96 @@
+{
+    "table": {
+        "turns_number": {
+            "id": 10,
+            "name": "Number of turns",
+            "type": "int"
+        }
+    },
+    "player": {
+        "points_tiles": {
+            "id": 10,
+            "name": "Points: tiles cost",
+            "type": "int"
+        },
+        "points_dev": {
+            "id": 11,
+            "name": "Points: 6-cost developments",
+            "type": "int"
+        },
+        "points_chips": {
+            "id": 12,
+            "name": "Points: vp chips",
+            "type": "int"
+        },
+        "tile_count": {
+            "id": 13,
+            "name": "Final tile count",
+            "type": "int"
+        },
+        "dice_number": {
+            "id": 14,
+            "name": "Final dice number",
+            "type": "int"
+        },
+        "dice_rolled": {
+            "id": 15,
+            "name": "Dice rolled",
+            "type": "int"
+        },
+        "dice_recruited": {
+            "id": 16,
+            "name": "Dice recruited",
+            "type": "int"
+        },
+        "dice_used": {
+            "id": 17,
+            "name": "Dice really used for an action",
+            "type": "int"
+        },
+        "dice_returned": {
+            "id": 18,
+            "name": "Dice returned (not used)",
+            "type": "int"
+        },
+        "dice_recall": {
+            "id": 19,
+            "name": "Dice recalled",
+            "type": "int"
+        },
+        "dice_scout": {
+            "id": 20,
+            "name": "Dice used to scout",
+            "type": "int"
+        },
+        "dice_stock": {
+            "id": 21,
+            "name": "Dice used to stock",
+            "type": "int"
+        },
+        "dice_dev": {
+            "id": 22,
+            "name": "Dice used to build developments",
+            "type": "int"
+        },
+        "dice_settle": {
+            "id": 23,
+            "name": "Dice used to settle worlds",
+            "type": "int"
+        },
+        "dice_produce": {
+            "id": 24,
+            "name": "Dice used to produce resources",
+            "type": "int"
+        },
+        "dice_trade": {
+            "id": 25,
+            "name": "Dice used for Ship\/Frade",
+            "type": "int"
+        },
+        "dice_consume": {
+            "id": 26,
+            "name": "Dice used for Ship\/Consume",
+            "type": "int"
+        }
+    }
+}
