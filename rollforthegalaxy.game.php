@@ -1081,7 +1081,6 @@ class RollForTheGalaxy extends Table
         self::notifyAllPlayers( 'scoutdiscard', clienttranslate('${player_name} discard ${nbr} card from construction zone to pick ${nbr} more card on scout action.'), array(
             'player_name' => self::getCurrentPlayerName(),
             'player_id' => $player_id,
-            'cards' => $cards,  // COMPAT
             'dev_cards' => $dev_cards,
             'world_cards' => $world_cards,
             'dev_top' => $this->tiles->getCardOnTop( 'bd'.$player_id ),
@@ -1298,7 +1297,6 @@ class RollForTheGalaxy extends Table
         ) );
 
         $msg_tile = $tile;
-        $visible = true; // COMPAT
         if( $bOnTop || $this->tiles->countCardInLocation( $target_location ) == 1 )
         {
             // The tile has been placed at the top of the stack => visible
@@ -1308,7 +1306,6 @@ class RollForTheGalaxy extends Table
         {
             // The tile has been placed at the bottom of the stack => non visible.
             // Use Secluded World as dummy
-            $visible = false; // COMPAT
             $msg_tile['type'] = 1;
         }
 
@@ -1316,7 +1313,6 @@ class RollForTheGalaxy extends Table
             'i18n' => array( 'type' ),
             'player_name' => self::getCurrentPlayerName(),
             'type' => $side == 'world' ? clienttranslate('world'): clienttranslate('development'),
-            'visible' => $visible, // COMPAT
             'target' => $side,
             'tile' => $msg_tile,
             'player_id' => $player_id,
