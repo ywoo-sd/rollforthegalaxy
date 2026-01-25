@@ -57,12 +57,6 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
 
 	}
 
-    protected function getGameName( )
-    {
-		// Used for translations and stuff. Please do not modify.
-        return "rollforthegalaxy";
-    }
-
     /*
         setupNewGame:
 
