@@ -786,23 +786,6 @@ function (dojo, declare) {
                 {
                     dojo.addClass( card_div, 'faction_left_tile' );
                 }
-
-
-                /// ONLY FOR DEV /////
-                // TODO : to be removed ////
-
-          /*      dojo.connect( card_div, 'dblclick', this, function( evt ) {
-
-                    this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/debugeffect.html", {
-                                                                            lock: true,
-                                                                            id: card_numeric_id
-                                                                         },
-                                 this, function( result ) {}, function( is_error) {} );
-
-
-                } );*/
-
-                /////
             }
         },
 
