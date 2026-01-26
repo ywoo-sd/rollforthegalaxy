@@ -387,7 +387,7 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         }
 
 
-        $states = $this->gamestate->state();
+        $states = $this->gamestate->getCurrentMainState()->toArray();
         if( $states['name'] == "assign" )
         {
             // exception: during this state, do not communicate the phase dice except current player
@@ -591,7 +591,7 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
                 }
             }
 
-            $state = $this->gamestate->state();
+            $state = $this->gamestate->getCurrentMainState()->toArray();
             if( $state['type'] == 'activeplayer' )
                 $this->gamestate->nextState( 'no_more_actions' );
             else
@@ -2779,7 +2779,7 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         $player_id = self::getCurrentPlayerId();
 
         $die = $this->dice->getCard( $die_id );
-        $state = $this->gamestate->state();
+        $state = $this->gamestate->getCurrentMainState()->toArray();
 
         if( $state['name'] == 'startDevelop' )
         {
