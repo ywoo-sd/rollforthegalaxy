@@ -1,0 +1,83 @@
+name: Deploy to BGA Studio
+
+on:
+  push:
+    branches:
+      - env/preview
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Prepare files for preview deployment
+        run: |
+          echo "Preparing files for rollforthegalaxypreview..."
+          
+          # Create staging directory
+          mkdir -p staging
+          
+          # Copy all files except excluded ones
+          rsync -av --progress . staging/ \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.gitignore' \
+            --exclude '_ide_helper.php' \
+            --exclude 'bga-framework.d.ts' \
+            --exclude 'README.md' \
+            --exclude 'LICENCE_BGA' \
+            --exclude 'staging'
+          
+          cd staging
+          
+          # Rename main game files
+          mv rollforthegalaxy.game.php rollforthegalaxypreview.game.php
+          mv rollforthegalaxy.action.php rollforthegalaxypreview.action.php
+          mv rollforthegalaxy.view.php rollforthegalaxypreview.view.php
+          mv rollforthegalaxy.js rollforthegalaxypreview.js
+          mv rollforthegalaxy.css rollforthegalaxypreview.css
+          mv rollforthegalaxy_rollforthegalaxy.tpl rollforthegalaxypreview_rollforthegalaxypreview.tpl
+          
+          # Replace all internal references
+          # Using find + sed to handle all text files
+          find . -type f \( -name "*.php" -o -name "*.js" -o -name "*.tpl" \) \
+            -exec sed -i 's/rollforthegalaxy/rollforthegalaxypreview/g' {} +
+          
+          # Replace the CamelCase class name in game.php
+          sed -i 's/class RollForTheGalaxy/class Rollforthegalaxypreview/g' rollforthegalaxypreview.game.php
+          
+          echo "Files prepared:"
+          ls -la
+          
+          echo "✅ File preparation complete!"
+
+      - name: Deploy to BGA Studio
+        env:
+          BGA_USER: ${{ secrets.BGA_USER }}
+          BGA_PASS: ${{ secrets.BGA_PASS }}
+        run: |
+          echo "Deploying to BGA Studio..."
+          
+          # Deploy from staging directory
+          lftp -c "
+            set sftp:auto-confirm yes
+            set net:timeout 30
+            set net:max-retries 3
+            open -u $BGA_USER,$BGA_PASS sftp://1.studio.boardgamearena.com:2022
+            
+            # Mirror the staging folder to the preview project
+            # --delete: remove files on server that don't exist locally
+            mirror --reverse --delete --verbose \
+              staging/ /rollforthegalaxypreview/
+            
+            bye
+          "
+          
+          echo "✅ Deployment complete!"
