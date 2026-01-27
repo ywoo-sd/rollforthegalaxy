@@ -646,6 +646,7 @@ function (dojo, declare) {
                     break;
 
                  case 'manage':
+                    this.addActionButton( 'reset_recruit', _('Reset'), 'onResetRecruit' );
                     this.addActionButton( 'manage', _('Done'), 'onManageDone' );
                     break;
 
@@ -2125,6 +2126,14 @@ function (dojo, declare) {
                          this, function( result ) {}, function( is_error) {} );
         },
 
+        onResetRecruit: function()
+        {
+            this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/resetRecruit.html", {
+                                                                    lock: true
+                                                                 },
+                         this, function( result ) {}, function( is_error) {} );
+        },
+
         onExploreDone: function()
         {
             this.ajaxcall( "/rollforthegalaxy/rollforthegalaxy/exploreDone.html", {
@@ -2212,6 +2221,7 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'card_built', 1200 );
 
             dojo.subscribe( 'recruitDie', this, 'notif_recruitDie' );
+            dojo.subscribe( 'resetRecruit', this, 'notif_resetRecruit' );
             dojo.subscribe( 'returnedDie', this, 'notif_returnedDie' );
             dojo.subscribe( 'dieShipped', this, 'notif_dieShipped' );
 
@@ -2361,6 +2371,28 @@ function (dojo, declare) {
 
             this.cup[ notif.args.player_id ].addToStockWithId( notif.args.die.type, notif.args.die.id, 'citizenry_'+notif.args.player_id+'_item_'+notif.args.die.id );
             this.citizenry[ notif.args.player_id ].removeFromStockById( notif.args.die.id );
+        },
+
+        notif_resetRecruit: function( notif )
+        {
+            // Update credit display
+            this.updateCredit( notif.args.player_id, notif.args.credit );
+
+            // Rebuild citizenry stock from server state
+            this.citizenry[ notif.args.player_id ].removeAll();
+            for( var die_id in notif.args.citizenry )
+            {
+                var die = notif.args.citizenry[ die_id ];
+                this.citizenry[ notif.args.player_id ].addToStockWithId( die.type, die.id );
+            }
+
+            // Rebuild cup stock from server state
+            this.cup[ notif.args.player_id ].removeAll();
+            for( var die_id in notif.args.cup )
+            {
+                var die = notif.args.cup[ die_id ];
+                this.cup[ notif.args.player_id ].addToStockWithId( die.type, die.id );
+            }
         },
 
         notif_movePhaseDie: function( notif )

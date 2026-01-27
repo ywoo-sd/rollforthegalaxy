@@ -39,6 +39,7 @@ ALTER TABLE  `player` ADD  `player_credit` MEDIUMINT UNSIGNED NOT NULL DEFAULT  
 ALTER TABLE  `player` ADD  `player_vp_chip` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE  `player` ADD  `player_choosed_phase` TINYINT UNSIGNED NULL DEFAULT NULL ;
 ALTER TABLE  `player` ADD  `player_dictate` TINYINT NOT NULL DEFAULT  '0';
+ALTER TABLE  `player` ADD  `player_manage_initial_credit` MEDIUMINT UNSIGNED NULL DEFAULT NULL;
 
 CREATE TABLE IF NOT EXISTS `tile` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -53,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `dice` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` varchar(16) NOT NULL COMMENT 'color of die',
   `card_type_arg` int(11) NOT NULL COMMENT 'result of roll',
-  `card_location` varchar(16) NOT NULL COMMENT 'one of {deck<N>, cup, citizenry, phase<N>, worldconstruct, devconstruct, resource}',
+  `card_location` varchar(16) NOT NULL COMMENT 'one of {deck<N>, cup, cup_recruited, citizenry, phase<N>, worldconstruct, devconstruct, resource}',
   `card_location_arg` int(11) NOT NULL COMMENT 'player id or position in deck or tile id',
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

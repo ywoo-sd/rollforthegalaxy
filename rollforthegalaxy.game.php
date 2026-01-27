@@ -318,7 +318,10 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         $result['players'] = self::getCollectionFromDb( $sql );
 
         $result['tiles_types'] = $this->tiles_types;
-        $result['dicecup'] = $this->dice->getCardsInLocation( 'cup' );
+        $result['dicecup'] = array_merge(
+            $this->dice->getCardsInLocation( 'cup' ),
+            $this->dice->getCardsInLocation( 'cup_recruited' )
+        );
         $result['dicecitizenry'] = $this->dice->getCardsInLocation( 'citizenry' );
         $result['dicephase'] = $this->dice->getCardsInLocation( array( 'phase1','phase2','phase3','phase4','phase5', 'phase6' ) );
         $result['devdice']=$this->dice->getCardsInLocation( 'devconstruct' );
@@ -1418,8 +1421,8 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         if( $die['location'] != 'citizenry' || $die['location_arg'] != $player_id )
             throw new SystemException( "This die is not in your citizenry" );
 
-        // Place die on cup
-        $this->dice->moveCard( $die_id, 'cup', $player_id );
+        // Place die in cup_recruited (temporary location for reset functionality)
+        $this->dice->moveCard( $die_id, 'cup_recruited', $player_id );
 
         $current_credit = self::getUniqueValueFromDB( "SELECT player_credit FROM player WHERE player_id='$player_id'" );
 
@@ -1427,7 +1430,6 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
             throw new UserException( self::_("You have no more credit to do this.") );
 
         self::DbQuery( "UPDATE player SET player_credit = player_credit-1 WHERE player_id='$player_id'" );
-        //self::DbQuery( "UPDATE dice SET card_type_arg='99' WHERE card_id='$die_id'" );  // To mark that it has been recruited this turn
 
         self::notifyAllPlayers( "updateCredit", '', array(
             'player_id' => $player_id,
@@ -1477,11 +1479,42 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
             ) );
         }
 
-        // If no dice in cup, must recall at least 1 die
-        if( $this->dice->countCardInLocation( 'cup', $player_id ) == 0 )
+        // If no dice in cup (including recruited), must recall at least 1 die
+        $cup_count = $this->dice->countCardInLocation( 'cup', $player_id )
+                   + $this->dice->countCardInLocation( 'cup_recruited', $player_id );
+        if( $cup_count == 0 )
             throw new UserException( self::_("You must RECALL at least one dice from anywhere, otherwise your cup will be empty!") );
 
+        // Move recruited dice from temporary location to cup
+        self::DbQuery( "UPDATE dice SET card_location='cup'
+                        WHERE card_location='cup_recruited' AND card_location_arg='$player_id'" );
+
         $this->gamestate->setPlayerNonMultiactive( $player_id, "no_more_actions" );
+    }
+
+    function resetRecruit()
+    {
+        $this->gamestate->checkPossibleAction( 'recruit' );
+
+        $player_id = self::getCurrentPlayerId();
+
+        // Restore initial credit
+        $initial_credit = self::getUniqueValueFromDB(
+            "SELECT player_manage_initial_credit FROM player WHERE player_id='$player_id'"
+        );
+        self::DbQuery( "UPDATE player SET player_credit='$initial_credit' WHERE player_id='$player_id'" );
+
+        // Move all recruited dice back to citizenry
+        self::DbQuery( "UPDATE dice SET card_location='citizenry'
+                        WHERE card_location='cup_recruited' AND card_location_arg='$player_id'" );
+
+        // Send notification to update UI
+        self::notifyPlayer( $player_id, 'resetRecruit', '', array(
+            'player_id' => $player_id,
+            'credit' => $initial_credit,
+            'citizenry' => $this->dice->getCardsInLocation( 'citizenry', $player_id ),
+            'cup' => $this->dice->getCardsInLocation( 'cup', $player_id )
+        ) );
     }
 
     function exploreDone()
@@ -3678,7 +3711,8 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
 
         self::notifyAllPlayers( 'pauseBeforeRecruit', '', array() );
 
-//        self::DbQuery( "UPDATE dice SET card_type_arg='0' WHERE 1" );  // To mark that it has been recruited this turn
+        // Save initial credit for each player before recruiting (for reset functionality)
+        self::DbQuery( "UPDATE player SET player_manage_initial_credit = player_credit" );
 
         $endOfGameReason = self::isEndOfGame();
         $bForceAutorecruit = ( $endOfGameReason !== null );
