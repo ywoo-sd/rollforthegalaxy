@@ -1419,7 +1419,10 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         $citizenry_count = $this->dice->countCardInLocation( 'citizenry', $player_id );
 
         if( $current_credit > 0 && $citizenry_count > 0 )
+        {
+            self::giveExtraTime( $player_id );
             return; // Still has recruiting decisions
+        }
 
         // 2. Do they have dice they could recall from their construction zones?
         $recallable_dice = $this->dice->countCardInLocation( 'worldconstruct', $player_id )
@@ -1435,7 +1438,10 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         }
 
         if( $recallable_dice > 0 )
+        {
+            self::giveExtraTime( $player_id );
             return;
+        }
 
         // If we auto skip management, we need to also reset credit to 1 if needed (same as manageDone)
         if( $current_credit == 0 )
@@ -3727,7 +3733,6 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         $players = self::loadPlayersBasicInfos();
         foreach( $players as $player_id => $dummy )
         {
-            self::giveExtraTime( $player_id );
             $this->autorecruit( $player_id, $bForceAutorecruit );
             $this->tryAutoSkipManage( $player_id );
         }
