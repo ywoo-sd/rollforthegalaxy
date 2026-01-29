@@ -4153,11 +4153,6 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
 
     function upgradeTableDb( $from_version )
     {
-        // $from_version is the current version of this game database, in numerical form.
-        // For example, if the game was running with a release of your game named "140430-1345",
-        // $from_version is equal to 1404301345
-
-        // Add player_manage_initial_credit column for recruit reset functionality
         if( $from_version <= 2601291200 )
         {
             $sql = "ALTER TABLE DBPREFIX_player ADD `player_manage_initial_credit` MEDIUMINT UNSIGNED NULL DEFAULT NULL";
