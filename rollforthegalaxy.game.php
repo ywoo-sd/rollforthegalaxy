@@ -4157,21 +4157,12 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
 
-        // Example:
-//        if( $from_version <= 1404301345 )
-//        {
-//            $sql = "ALTER TABLE xxxxxxx ....";
-//            self::DbQuery( $sql );
-//        }
-//        if( $from_version <= 1405061421 )
-//        {
-//            $sql = "CREATE TABLE xxxxxxx ....";
-//            self::DbQuery( $sql );
-//        }
-//        // Please add your future database scheme changes here
-//
-//
-
+        // Add player_manage_initial_credit column for recruit reset functionality
+        if( $from_version <= 2601291200 )
+        {
+            $sql = "ALTER TABLE DBPREFIX_player ADD `player_manage_initial_credit` MEDIUMINT UNSIGNED NULL DEFAULT NULL";
+            self::applyDbUpgradeToAllDB( $sql );
+        }
 
     }
 
