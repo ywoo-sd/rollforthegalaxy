@@ -265,6 +265,54 @@ function (dojo, declare) {
                 this.updateCredit( player_id, player.credit );
                 $('player_vp_'+player_id).innerHTML = player.vp_chip;
 
+                // Player options button - only show for current player
+                if( player_id == this.player_id )
+                {
+                    // Show the options button
+                    dojo.addClass( 'player_options_btn_'+player_id, 'active' );
+                    
+                    // Initialize checkbox states from preferences
+                    var skipRecallPref = this.userPreferences.get(100);
+                    var prioritizeColoredPref = this.userPreferences.get(101);
+                    
+                    if( skipRecallPref == 1 ) {
+                        $('player_option_skip_recall_'+player_id).checked = true;
+                    }
+                    if( prioritizeColoredPref == 1 ) {
+                        $('player_option_prioritize_colored_'+player_id).checked = true;
+                    }
+                    
+                    // Toggle options panel on button click
+                    dojo.connect( $('player_options_btn_'+player_id), 'onclick', this, function(evt) {
+                        evt.stopPropagation();
+                        dojo.toggleClass( 'player_options_panel_'+this.player_id, 'open' );
+                    });
+                    
+                    // Handle checkbox changes
+                    dojo.connect( $('player_option_skip_recall_'+player_id), 'onchange', this, function(evt) {
+                        var value = evt.target.checked ? 1 : 0;
+                        this.userPreferences.set(100, value);
+                    });
+                    
+                    dojo.connect( $('player_option_prioritize_colored_'+player_id), 'onchange', this, function(evt) {
+                        var value = evt.target.checked ? 1 : 0;
+                        this.userPreferences.set(101, value);
+                    });
+                    
+                    // Close panel when clicking outside
+                    dojo.connect( document.body, 'onclick', this, function(evt) {
+                        var panel = $('player_options_panel_'+this.player_id);
+                        var btn = $('player_options_btn_'+this.player_id);
+                        if( panel && btn && !panel.contains(evt.target) && !btn.contains(evt.target) ) {
+                            dojo.removeClass( panel, 'open' );
+                        }
+                    });
+                    
+                    // Add tooltips for info icons
+                    this.addTooltip( 'player_option_skip_recall_info_'+player_id, _('Automatically skip recalling dice from your production planets.'), '' );
+                    this.addTooltip( 'player_option_prioritize_colored_info_'+player_id, _('Automatically prioritize colored dice over white dice during recruit phase.'), '' );
+                }
+
                 if( player_id == this.player_id )
                 {
                     this.scoutedDev = new ebg.stock();

@@ -582,3 +582,66 @@
         background-repeat: none;
     }
 */
+
+/************* Player Options Button and Panel ******************/
+
+.player_options_btn {
+    cursor: pointer;
+    margin-left: 10px;
+    color: #666;
+    font-size: 14px;
+    display: none;
+}
+
+.player_options_btn:hover {
+    color: #333;
+}
+
+.player_options_btn.active {
+    display: inline-block;
+}
+
+.player_options_panel {
+    display: none;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.player_options_panel.open {
+    display: block;
+}
+
+.player_option_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 12px;
+}
+
+.player_option_row label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex: 1;
+}
+
+.player_option_checkbox {
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+.player_option_info {
+    color: #888;
+    cursor: help;
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+.player_option_info:hover {
+    color: #555;
+}

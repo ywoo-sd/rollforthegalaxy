@@ -1,1 +1,20 @@
-[]
+{
+  "100": {
+    "name": "Skip Recall from Production",
+    "needReload": false,
+    "values": {
+      "0": { "name": "Disabled" },
+      "1": { "name": "Enabled" }
+    },
+    "default": 0
+  },
+  "101": {
+    "name": "Prioritize Colored Dice",
+    "needReload": false,
+    "values": {
+      "0": { "name": "Disabled" },
+      "1": { "name": "Enabled" }
+    },
+    "default": 0
+  }
+}

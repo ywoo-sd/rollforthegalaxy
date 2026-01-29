@@ -132,6 +132,17 @@ var jstpl_player_board = '<div class="clear">\
             <span class="player_vp_tt"><img src="{GAMETHEMEURL}img/vp.svg" class="imgtext"/> x<span id="player_vp_${id}" class="player_vp">0</span></span>\
             &nbsp;&nbsp;&nbsp;\
             <span class="player_tableaucount_tt"><img src="{GAMETHEMEURL}img/cardback.png" class="imgtext tableaucount" /> x<span id="tableau_nbr_${id}" class="tableaucount">0</span></span>\
+            <span id="player_options_btn_${id}" class="player_options_btn"><i class="fa fa-cog"></i></span>\
+        </div>\
+        <div id="player_options_panel_${id}" class="player_options_panel">\
+            <div class="player_option_row">\
+                <label><input type="checkbox" id="player_option_skip_recall_${id}" class="player_option_checkbox" /> Skip Recall</label>\
+                <span id="player_option_skip_recall_info_${id}" class="player_option_info"><i class="fa fa-info-circle"></i></span>\
+            </div>\
+            <div class="player_option_row">\
+                <label><input type="checkbox" id="player_option_prioritize_colored_${id}" class="player_option_checkbox" /> Prioritize Colored Dice</label>\
+                <span id="player_option_prioritize_colored_info_${id}" class="player_option_info"><i class="fa fa-info-circle"></i></span>\
+            </div>\
         </div>';
 
 var jstpl_card_content = '<div class="card_content card_content_${type}" id="card_content_${id}"><div class="tile_title">${name}</div><div id="resourcezone_${id}" class="resourcezone"></div><div class="card_remove"></div></div>';
