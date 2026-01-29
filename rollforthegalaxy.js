@@ -646,7 +646,7 @@ function (dojo, declare) {
                     break;
 
                  case 'manage':
-                    this.addActionButton( 'reset_recruit', _('Reset'), 'onResetRecruit' );
+                    this.addActionButton( 'reset_recruit', _('Reset recruitment'), 'onResetRecruit' );
                     this.addActionButton( 'manage', _('Done'), 'onManageDone' );
                     break;
 
