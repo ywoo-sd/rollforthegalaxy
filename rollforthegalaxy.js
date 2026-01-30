@@ -303,7 +303,7 @@ function (dojo, declare) {
                         }
                     });
                     
-                    this.addTooltip( 'player_option_skip_recall_info_'+player_id, _('Automatically skip recalling dice from your production planets.'), '' );
+                    this.addTooltip( 'player_option_skip_recall_info_'+player_id, _('Automatically skip recalling dice from your construction zones and production planets.'), '' );
                     this.addTooltip( 'player_option_prioritize_colored_info_'+player_id, _('Automatically prioritize colored dice over white dice during recruit phase.'), '' );
                 }
 

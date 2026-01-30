@@ -1366,6 +1366,10 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         // For this player, autorecruit remaining dice in one of these 2 situations:
         // 1. there are enough credits to recruit all die
         // 2. all remaining dice are the same
+        // 
+        // With "Automatically Prioritize Colored Dice Recruitment" preference enabled:
+        // - Auto-recruit triggers if credits >= number of colored dice
+        // - Recruits all colored dice first, then as many white dice as credits allow
 
         $dice = $this->dice->getCardsInLocation( 'citizenry', $player_id );
         $credit = self::getUniqueValueFromDB( "SELECT player_credit FROM player WHERE player_id='$player_id'" );
@@ -1373,6 +1377,53 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         if( $credit == 0 )
             return ;
 
+        // Check if player wants to prioritize colored dice over white dice
+        $prioritizeColored = $this->userPreferences->get( $player_id, 101 );
+        
+        if( $prioritizeColored == 1 )
+        {
+            // Separate dice into colored and white
+            // Colored = Military, Consumption, Novelty, Rare Elements, Genes, Alien (types 2-7)
+            // White = Starting dice only (type 1)
+            $colored_dice = array();
+            $white_dice = array();
+            
+            foreach( $dice as $die )
+            {
+                if( $die['type'] != 1 )  // Not a Starting (white) die
+                    $colored_dice[] = $die;
+                else
+                    $white_dice[] = $die;
+            }
+            
+            // Auto-recruit if we have enough credits for all colored dice
+            if( $credit >= count( $colored_dice ) || $bForce )
+            {
+                // Recruit all colored dice first
+                foreach( $colored_dice as $die )
+                {
+                    $this->doRecruit( $player_id, $die['id'] );
+                    $credit--;
+                    
+                    if( $credit == 0 )
+                        return;
+                }
+                
+                // Recruit as many white dice as credits allow
+                foreach( $white_dice as $die )
+                {
+                    $this->doRecruit( $player_id, $die['id'] );
+                    $credit--;
+                    
+                    if( $credit == 0 )
+                        return;
+                }
+            }
+            // If not enough credits for colored dice, don't auto-recruit
+            return;
+        }
+
+        // Original behavior when preference is not enabled
         if( $credit >= count( $dice ) || $bForce )
         {
             // Recruit all dice
@@ -1425,18 +1476,34 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         if( $current_credit > 0 && $citizenry_count > 0 )
             return false; // Still has recruiting decisions
 
-        // 2. Do they have dice they could recall from their construction zones?
-        $recallable_dice = $this->dice->countCardInLocation( 'worldconstruct', $player_id )
-                         + $this->dice->countCardInLocation( 'devconstruct', $player_id );
-
-        // 3. Do they have dice on their tableau worlds?
-        $resource_dice = $this->dice->getCardsInLocation( 'resource' );
-        foreach( $resource_dice as $die )
+        // Check if player wants to skip recalling dice
+        $skipRecall = $this->userPreferences->get( $player_id, 100 );
+        
+        $recallable_dice = 0;
+        
+        if( $skipRecall != 1 )
         {
-            $world = $this->tiles->getCard( $die['location_arg'] );
-            if( $world['location'] == 'tableau' && $world['location_arg'] == $player_id )
-                $recallable_dice++;
+            // Only count recallable dice if preference is NOT enabled
+            
+            // 2. Do they have dice they could recall from their construction zones?
+            $recallable_dice = $this->dice->countCardInLocation( 'worldconstruct', $player_id )
+                             + $this->dice->countCardInLocation( 'devconstruct', $player_id );
+
+            // 3. Do they have dice on their tableau worlds (production planets)?
+            $resource_dice = $this->dice->getCardsInLocation( 'resource' );
+            foreach( $resource_dice as $die )
+            {
+                $world = $this->tiles->getCard( $die['location_arg'] );
+                if( $world['location'] == 'tableau' && $world['location_arg'] == $player_id )
+                    $recallable_dice++;
+            }
         }
+
+        // 4. Check if cup will be empty - player must have at least one die in cup
+        $cup_count = $this->dice->countCardInLocation( 'cup', $player_id )
+                   + $this->dice->countCardInLocation( 'cup_recruited', $player_id );
+        if( $cup_count == 0 )
+            return false; // Must recall at least one die to avoid empty cup
 
         if( $recallable_dice > 0 )
             return false; // Has dice they could recall

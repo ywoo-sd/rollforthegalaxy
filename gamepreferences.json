@@ -1,6 +1,6 @@
 {
   "100": {
-    "name": "Skip Recall from Production",
+    "name": "Skip Recall",
     "needReload": false,
     "values": {
       "0": { "name": "Disabled" },
@@ -9,7 +9,7 @@
     "default": 0
   },
   "101": {
-    "name": "Prioritize Colored Dice",
+    "name": "Automatically Prioritize Colored Dice Recruitment",
     "needReload": false,
     "values": {
       "0": { "name": "Disabled" },

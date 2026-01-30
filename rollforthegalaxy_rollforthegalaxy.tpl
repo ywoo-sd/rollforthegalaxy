@@ -140,7 +140,7 @@ var jstpl_player_board = '<div class="clear">\
                 <span id="player_option_skip_recall_info_${id}" class="player_option_info"><i class="fa fa-info-circle"></i></span>\
             </div>\
             <div class="player_option_row">\
-                <label><input type="checkbox" id="player_option_prioritize_colored_${id}" class="player_option_checkbox" /> Prioritize Colored Dice</label>\
+                <label><input type="checkbox" id="player_option_prioritize_colored_${id}" class="player_option_checkbox" /> Auto Prioritize Colored Dice</label>\
                 <span id="player_option_prioritize_colored_info_${id}" class="player_option_info"><i class="fa fa-info-circle"></i></span>\
             </div>\
         </div>';
