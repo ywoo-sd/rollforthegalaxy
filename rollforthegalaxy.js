@@ -276,27 +276,12 @@ function (dojo, declare) {
                     var skipRecallPref = 0;
                     var prioritizeColoredPref = 0;
                     
-                    // Debug: log what preference methods are available
-                    console.log('Preferences debug:', {
-                        'this.prefs': this.prefs,
-                        'this.prefs[100]': this.prefs ? this.prefs[100] : 'N/A',
-                        'this.bga': this.bga,
-                        'this.bga.userPreferences': this.bga ? this.bga.userPreferences : 'N/A',
-                        'getGameUserPreference': typeof this.getGameUserPreference,
-                        'setGameUserPreference': typeof this.setGameUserPreference
-                    });
-                    
                     if( this.prefs && this.prefs[100] ) {
                         skipRecallPref = this.prefs[100].value;
-                        console.log('Using this.prefs for pref 100:', skipRecallPref);
                     } else if( this.bga && this.bga.userPreferences ) {
                         skipRecallPref = this.bga.userPreferences.get(100);
-                        console.log('Using this.bga.userPreferences for pref 100:', skipRecallPref);
                     } else if( typeof this.getGameUserPreference === 'function' ) {
                         skipRecallPref = this.getGameUserPreference(100);
-                        console.log('Using getGameUserPreference for pref 100:', skipRecallPref);
-                    } else {
-                        console.log('No preference method available for pref 100');
                     }
                     
                     if( this.prefs && this.prefs[101] ) {
@@ -324,16 +309,11 @@ function (dojo, declare) {
                     var self = this;
                     dojo.connect( $('player_option_skip_recall_'+player_id), 'onchange', this, function(evt) {
                         var value = evt.target.checked ? 1 : 0;
-                        console.log('Saving pref 100 with value:', value);
                         // Try multiple ways to save preferences for compatibility
                         if( self.bga && self.bga.userPreferences ) {
-                            console.log('Using self.bga.userPreferences.set');
                             self.bga.userPreferences.set(100, value);
                         } else if( typeof self.setGameUserPreference === 'function' ) {
-                            console.log('Using self.setGameUserPreference');
                             self.setGameUserPreference(100, value);
-                        } else {
-                            console.log('No save method available!');
                         }
                         // Also update local prefs object
                         if( self.prefs && self.prefs[100] ) {
