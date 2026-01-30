@@ -272,15 +272,46 @@ function (dojo, declare) {
                     dojo.addClass( 'player_options_btn_'+player_id, 'active' );
                     
                     // Initialize checkbox states from preferences (if available)
+                    // Try multiple ways to access preferences for compatibility
+                    var skipRecallPref = 0;
+                    var prioritizeColoredPref = 0;
+                    
+                    // Debug: log what preference methods are available
+                    console.log('Preferences debug:', {
+                        'this.prefs': this.prefs,
+                        'this.prefs[100]': this.prefs ? this.prefs[100] : 'N/A',
+                        'this.bga': this.bga,
+                        'this.bga.userPreferences': this.bga ? this.bga.userPreferences : 'N/A',
+                        'getGameUserPreference': typeof this.getGameUserPreference,
+                        'setGameUserPreference': typeof this.setGameUserPreference
+                    });
+                    
                     if( this.prefs && this.prefs[100] ) {
-                        if( this.prefs[100].value == 1 ) {
-                            $('player_option_skip_recall_'+player_id).checked = true;
-                        }
+                        skipRecallPref = this.prefs[100].value;
+                        console.log('Using this.prefs for pref 100:', skipRecallPref);
+                    } else if( this.bga && this.bga.userPreferences ) {
+                        skipRecallPref = this.bga.userPreferences.get(100);
+                        console.log('Using this.bga.userPreferences for pref 100:', skipRecallPref);
+                    } else if( typeof this.getGameUserPreference === 'function' ) {
+                        skipRecallPref = this.getGameUserPreference(100);
+                        console.log('Using getGameUserPreference for pref 100:', skipRecallPref);
+                    } else {
+                        console.log('No preference method available for pref 100');
                     }
+                    
                     if( this.prefs && this.prefs[101] ) {
-                        if( this.prefs[101].value == 1 ) {
-                            $('player_option_prioritize_colored_'+player_id).checked = true;
-                        }
+                        prioritizeColoredPref = this.prefs[101].value;
+                    } else if( this.bga && this.bga.userPreferences ) {
+                        prioritizeColoredPref = this.bga.userPreferences.get(101);
+                    } else if( typeof this.getGameUserPreference === 'function' ) {
+                        prioritizeColoredPref = this.getGameUserPreference(101);
+                    }
+                    
+                    if( skipRecallPref == 1 ) {
+                        $('player_option_skip_recall_'+player_id).checked = true;
+                    }
+                    if( prioritizeColoredPref == 1 ) {
+                        $('player_option_prioritize_colored_'+player_id).checked = true;
                     }
                     
                     // Toggle options panel on button click
@@ -289,19 +320,38 @@ function (dojo, declare) {
                         dojo.toggleClass( 'player_options_panel_'+this.player_id, 'open' );
                     });
                     
-                    // Handle checkbox changes - use BGA's setPreferenceValue method
+                    // Handle checkbox changes
                     var self = this;
                     dojo.connect( $('player_option_skip_recall_'+player_id), 'onchange', this, function(evt) {
                         var value = evt.target.checked ? 1 : 0;
-                        if( typeof self.setPreferenceValue === 'function' ) {
-                            self.setPreferenceValue(100, value);
+                        console.log('Saving pref 100 with value:', value);
+                        // Try multiple ways to save preferences for compatibility
+                        if( self.bga && self.bga.userPreferences ) {
+                            console.log('Using self.bga.userPreferences.set');
+                            self.bga.userPreferences.set(100, value);
+                        } else if( typeof self.setGameUserPreference === 'function' ) {
+                            console.log('Using self.setGameUserPreference');
+                            self.setGameUserPreference(100, value);
+                        } else {
+                            console.log('No save method available!');
+                        }
+                        // Also update local prefs object
+                        if( self.prefs && self.prefs[100] ) {
+                            self.prefs[100].value = value;
                         }
                     });
                     
                     dojo.connect( $('player_option_prioritize_colored_'+player_id), 'onchange', this, function(evt) {
                         var value = evt.target.checked ? 1 : 0;
-                        if( typeof self.setPreferenceValue === 'function' ) {
-                            self.setPreferenceValue(101, value);
+                        // Try multiple ways to save preferences for compatibility
+                        if( self.bga && self.bga.userPreferences ) {
+                            self.bga.userPreferences.set(101, value);
+                        } else if( typeof self.setGameUserPreference === 'function' ) {
+                            self.setGameUserPreference(101, value);
+                        }
+                        // Also update local prefs object
+                        if( self.prefs && self.prefs[101] ) {
+                            self.prefs[101].value = value;
                         }
                     });
                     
