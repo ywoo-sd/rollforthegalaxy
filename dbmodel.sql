@@ -44,7 +44,7 @@ ALTER TABLE  `player` ADD  `player_manage_initial_credit` MEDIUMINT UNSIGNED NUL
 CREATE TABLE IF NOT EXISTS `tile` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` varchar(16) NOT NULL COMMENT 'see materials.inc.php',
-  `card_type_arg` int(11) NOT NULL COMMENT 'unused',
+  `card_type_arg` int(11) NOT NULL COMMENT 'track reassign power usage',
   `card_location` varchar(16) NOT NULL COMMENT 'one of {deck, tableau, bd<N>, bw<N>, homeworlds, factiontiles, scout}',
   `card_location_arg` int(11) NOT NULL COMMENT 'player id or position in deck/stack',
   PRIMARY KEY (`card_id`)
