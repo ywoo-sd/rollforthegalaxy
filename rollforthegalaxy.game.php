@@ -1451,6 +1451,10 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
             ) );
         }
 
+        // Move recruited dice from temporary location to cup (same as manageDone)
+        self::DbQuery( "UPDATE dice SET card_location='cup'
+                        WHERE card_location='cup_recruited' AND card_location_arg='$player_id'" );
+
         // Auto-skip this player
         $this->gamestate->setPlayerNonMultiactive( $player_id, "no_more_actions" );
         return true;
