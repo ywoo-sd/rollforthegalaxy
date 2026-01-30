@@ -268,33 +268,44 @@ function (dojo, declare) {
                 // Player options button - only show for current player
                 if( player_id == this.player_id )
                 {
+                    // Show the options button
                     dojo.addClass( 'player_options_btn_'+player_id, 'active' );
                     
-                    var skipRecallPref = this.userPreferences.get(100);
-                    var prioritizeColoredPref = this.userPreferences.get(101);
-                    
-                    if( skipRecallPref == 1 ) {
-                        $('player_option_skip_recall_'+player_id).checked = true;
+                    // Initialize checkbox states from preferences (if available)
+                    if( this.prefs && this.prefs[100] ) {
+                        if( this.prefs[100].value == 1 ) {
+                            $('player_option_skip_recall_'+player_id).checked = true;
+                        }
                     }
-                    if( prioritizeColoredPref == 1 ) {
-                        $('player_option_prioritize_colored_'+player_id).checked = true;
+                    if( this.prefs && this.prefs[101] ) {
+                        if( this.prefs[101].value == 1 ) {
+                            $('player_option_prioritize_colored_'+player_id).checked = true;
+                        }
                     }
                     
+                    // Toggle options panel on button click
                     dojo.connect( $('player_options_btn_'+player_id), 'onclick', this, function(evt) {
                         evt.stopPropagation();
                         dojo.toggleClass( 'player_options_panel_'+this.player_id, 'open' );
                     });
                     
+                    // Handle checkbox changes - use BGA's setPreferenceValue method
+                    var self = this;
                     dojo.connect( $('player_option_skip_recall_'+player_id), 'onchange', this, function(evt) {
                         var value = evt.target.checked ? 1 : 0;
-                        this.userPreferences.set(100, value);
+                        if( typeof self.setPreferenceValue === 'function' ) {
+                            self.setPreferenceValue(100, value);
+                        }
                     });
                     
                     dojo.connect( $('player_option_prioritize_colored_'+player_id), 'onchange', this, function(evt) {
                         var value = evt.target.checked ? 1 : 0;
-                        this.userPreferences.set(101, value);
+                        if( typeof self.setPreferenceValue === 'function' ) {
+                            self.setPreferenceValue(101, value);
+                        }
                     });
                     
+                    // Close panel when clicking outside
                     dojo.connect( document.body, 'onclick', this, function(evt) {
                         var panel = $('player_options_panel_'+this.player_id);
                         var btn = $('player_options_btn_'+this.player_id);
@@ -303,6 +314,7 @@ function (dojo, declare) {
                         }
                     });
                     
+                    // Add tooltips for info icons
                     this.addTooltip( 'player_option_skip_recall_info_'+player_id, _('Automatically skip recalling dice from your construction zones and production planets.'), '' );
                     this.addTooltip( 'player_option_prioritize_colored_info_'+player_id, _('Automatically prioritize colored dice over white dice during recruit phase.'), '' );
                 }
