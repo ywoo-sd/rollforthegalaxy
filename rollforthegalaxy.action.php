@@ -133,6 +133,13 @@
         self::ajaxResponse( );
     }
 
+    function resetRecruit()
+    {
+        self::setAjaxMode();
+        $this->game->resetRecruit();
+        self::ajaxResponse();
+    }
+
     function exploreDone()
     {
         self::setAjaxMode();
