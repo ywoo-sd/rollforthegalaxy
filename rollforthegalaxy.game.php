@@ -4202,6 +4202,11 @@ class RollForTheGalaxy extends Bga\GameFramework\Table
         {
             $sql = "ALTER TABLE DBPREFIX_player ADD `player_manage_initial_credit` MEDIUMINT UNSIGNED NULL DEFAULT NULL";
             self::applyDbUpgradeToAllDB( $sql );
+
+            // Initialize for any game currently in the recruitment phase, so that
+            // the Reset button works immediately without waiting for the next phase.
+            $sql = "UPDATE DBPREFIX_player SET player_manage_initial_credit = player_credit WHERE player_manage_initial_credit IS NULL";
+            self::applyDbUpgradeToAllDB( $sql );
         }
 
     }
